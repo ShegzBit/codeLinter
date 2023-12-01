@@ -11,7 +11,7 @@ then
 	fi
 fi
 # install semistandard
-which semistandard > is_exists
+which semistandard > /dev/null
 if [ $? -ne 0 ]
 then
 	npm install semistandard -g
@@ -21,13 +21,23 @@ then
 	fi
 fi
 # clone and install betty
-which betty > is_exists
+which betty > /dev/null
 if [ $? -ne 0 ]
 then
 	git clone https://github.com/alx-tools/Betty.git && cd Betty && sudo ./install.sh
 	if [ $? -ne 0 ]
 	then
 		echo 'Failed to install betty'
+	fi
+fi
+
+which shellcheck > /dev/null
+if [ $? -ne 0 ]
+then
+	sudo apt-get install shellcheck -y
+	if [ $? -ne 0 ]
+	then
+		echo 'Failed to install Shellcheck'
 	fi
 fi
 

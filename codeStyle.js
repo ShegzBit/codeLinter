@@ -12,7 +12,7 @@ handleFileError(fileDict.nonExistent, "Could find these files");
 handleFileError(fileDict.invalids, "Couldn't find a style linter for these files");
 
 function groupFile (fileList) {
-  const fileDict = { jsFiles: [], pyFiles: [], cFiles: [], invalids: [], nonExistent: [] };
+  const fileDict = { jsFiles: [], pyFiles: [], cFiles: [], shFiles: [], invalids: [], nonExistent: [] };
 
   for (file of fileList) {
     categorize(file);
@@ -22,6 +22,8 @@ function groupFile (fileList) {
     const pyMatch = /[\w\s\W]+\.py$/;
     const jsMatch = /[\w\s\W]+\.js$/;
     const cMatch = /[\w\s\W]+\.(c|h)$/;
+    const shMatch = /[\w\s\W]+\.sh$/;
+    const matches = {pyMatch: fileDict.pyFiles, jsMatch: fileDict.jsFiles, cMatch: fileDict.cFiles, shMatch: fileDict.shFiles}
 
     if (!(fs.existsSync(file))){
       fileDict.nonExistent.push(file);
@@ -31,6 +33,8 @@ function groupFile (fileList) {
       fileDict.jsFiles.push(file);
     } else if (cMatch.test(file)) {
       fileDict.cFiles.push(file);
+    } else if (shMatch.test(file)) {
+      fileDict.shFiles.push(file);
     } else {
       fileDict.invalids.push(file);
     }
@@ -43,6 +47,7 @@ function styleFile (fileDict) {
     styleSpecificType(fileDict, 'jsFiles');
     styleSpecificType(fileDict, 'pyFiles');
     styleSpecificType(fileDict, 'cFiles');
+    styleSpecificType(fileDict, 'shFiles');
 
   function styleSpecificType (fileDict, fileType) {
     for (file of fileDict[fileType]) {
@@ -51,7 +56,7 @@ function styleFile (fileDict) {
   }
 
   function callStyler (file, fileType) {
-    const styler = { jsFiles: 'semistandard ', pyFiles: 'pycodestyle ', cFiles: 'betty ' };
+    const styler = { jsFiles: 'semistandard ', pyFiles: 'pycodestyle ', cFiles: 'betty ', shFiles: 'shellcheck '};
     exec(styler[fileType] + file, (err, stdout, stderr) => {
       console.log(`--------------------------------${file}----------------------------------`);
       console.log(stdout);
